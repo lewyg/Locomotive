@@ -6,14 +6,10 @@
 #include "Camera.h"
 #include "PrimitiveObject.h"
 #include "Locomotive.h"
-#include "Box.h"
-#include "Cube.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "SOIL.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -48,7 +44,7 @@ int main()
 
 	loco = new Locomotive(1.0f);
 
-	double a = 0;
+	double a = 0, b = 0;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -83,12 +79,13 @@ int main()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		//a = (a + 0.001);
-		a += loco->getSpeed();
+		loco->Action();
+		a = (a + 0.001);
+		b += loco->getSpeed();
 		glm::mat4 trans;
-		trans = glm::translate(trans, glm::vec3(0, 0, a ));
-		GLfloat angle = 0;// = 20.0f * i + a;
-		trans = glm::rotate(trans, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+		trans = glm::translate(trans, glm::vec3(0, 0, b ));
+		GLfloat angle = 20.0f * + a;
+		//trans = glm::rotate(trans, angle, glm::vec3(1.0f, 0.5f, 0.3f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(trans));
 		loco->Draw(trans, modelLoc, ourShader.Program);
 
@@ -146,9 +143,9 @@ void Do_Movement()
 	if (keys[GLFW_KEY_D])
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	if (keys[GLFW_KEY_UP])
-		loco->setSpeed(loco->getSpeed() + 0.01f * deltaTime);
+		loco->setSpeed(loco->getSpeed() + 0.05f * deltaTime);
 	if (keys[GLFW_KEY_DOWN])
-		loco->setSpeed(loco->getSpeed() - 0.01f * deltaTime);
+		loco->setSpeed(loco->getSpeed() - 0.05f * deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW
