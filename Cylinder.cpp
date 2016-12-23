@@ -6,8 +6,6 @@
 #include "PrimitiveObject.h"
 #include "Cylinder.h"
 
-#define M_PI 3.14159265358979323846
-
 using namespace std;
 
 Cylinder::Cylinder(GLfloat height, GLfloat radius, GLuint sides, GLuint texture, glm::vec3 position) : PrimitiveObject(texture, position)

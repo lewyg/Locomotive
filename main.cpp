@@ -6,14 +6,10 @@
 #include "Camera.h"
 #include "PrimitiveObject.h"
 #include "Locomotive.h"
-#include "Box.h"
-#include "Cube.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "SOIL.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;

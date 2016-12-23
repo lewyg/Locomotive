@@ -8,6 +8,7 @@
 #include "Box.h"
 #include "Cube.h"
 #include "Cylinder.h"
+#include "Cone.h"
 #include "Textures.h"
 
 using namespace std;
@@ -28,7 +29,7 @@ Locomotive::Locomotive(GLfloat size)
 {
 	GLuint tex1 = loadTexture("img/container.jpg");
 	this->parts.push_back(new Cube(1.0f * size, tex1, scalePosition(parts_position[0], size)));
-	this->parts.push_back(new Cylinder(1.0f * size,0.5f * size, 10, tex1, scalePosition(parts_position[1], size)));
+	this->parts.push_back(new Cone(1.0f * size,0.5f * size, 10, tex1, scalePosition(parts_position[1], size)));
 }
 
 
