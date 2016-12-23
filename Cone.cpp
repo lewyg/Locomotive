@@ -8,7 +8,8 @@
 
 using namespace std;
 
-Cone::Cone(GLfloat height, GLfloat radius, GLuint sides, GLuint texture, glm::vec3 position) : PrimitiveObject(texture, position)
+Cone::Cone(GLfloat height, GLfloat radius, GLuint sides, GLuint texture, glm::vec3 position, glm::vec4 rotation)
+ 	: PrimitiveObject(texture, position, rotation)
 {
 	GLfloat angle = 2 * M_PI / sides;
 	GLfloat prev_x = 1.0f * radius;

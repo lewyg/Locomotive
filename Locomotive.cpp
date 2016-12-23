@@ -13,9 +13,18 @@
 
 using namespace std;
 
-static vector<glm::vec3> parts_position= {
-	glm::vec3(0.0f, 0.0f, -0.5f),
-	glm::vec3(0.0f, 0.0f, 0.0f)
+static vector<glm::vec3> parts_position = {
+	glm::vec3(0.0f, 0.0f, 0.0f),
+	glm::vec3(0.5f, 0.5f, 0.0f),
+	glm::vec3(2.0f, 0.5f, 0.0f),
+	glm::vec3(0.75f, -0.3f, 0.0f),
+};
+
+static vector<glm::vec4> parts_rotation = {
+	glm::vec4(0.0f, 0.0f, 0.0f, 0.0f),
+	glm::vec4(0.0f, 1.0f, 0.0f, M_PI / 2.0f),
+	glm::vec4(0.0f, 1.0f, 0.0f, M_PI / 2.0f),
+	glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
 };
 
 glm::vec3 scalePosition(glm::vec3 pos, GLfloat size)
@@ -27,9 +36,11 @@ glm::vec3 scalePosition(glm::vec3 pos, GLfloat size)
 
 Locomotive::Locomotive(GLfloat size)
 {
-	GLuint tex1 = loadTexture("img/container.jpg");
-	this->parts.push_back(new Cube(1.0f * size, tex1, scalePosition(parts_position[0], size)));
-	this->parts.push_back(new Cone(1.0f * size,0.5f * size, 10, tex1, scalePosition(parts_position[1], size)));
+	GLuint tex1 = loadTexture("img/steel.jpg");
+	this->parts.push_back(new Box(1.0f * size, 1.5f * size, 1.0 * size, tex1, scalePosition(parts_position[0], size), parts_rotation[0]));
+	this->parts.push_back(new Cylinder(1.5f * size, 0.5f * size, 20, tex1, scalePosition(parts_position[1], size), parts_rotation[1]));
+	this->parts.push_back(new Cone(0.5f * size, 0.5f * size, 20, tex1, scalePosition(parts_position[2], size), parts_rotation[2]));
+	this->parts.push_back(new Box(2.5f * size, 0.3f * size, 1.0f * size, tex1, scalePosition(parts_position[3], size), parts_rotation[3]));
 }
 
 

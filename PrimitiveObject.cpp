@@ -37,13 +37,16 @@ void PrimitiveObject::bindVertices()
 void PrimitiveObject::Draw(const glm::mat4& modelTrans, GLuint modelLoc, GLuint shader) const
 {
 	glm::mat4 modelTrans2 = glm::translate(modelTrans, position);
+	if (rotation.w != 0.0f)
+		modelTrans2 = glm::rotate(modelTrans2, rotation.w, glm::vec3(rotation.x, rotation.y, rotation.z));
+
 	if (glGetUniformLocation(shader, "ourTexture") != texture)
 	{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glUniform1i(glGetUniformLocation(shader, "ourTexture"), 0);
 	}
-	
+
 	glBindVertexArray(VAO);
 
 	// no internal transformations for now

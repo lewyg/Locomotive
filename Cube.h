@@ -3,5 +3,5 @@
 class Cube : public Box
 {
 public:
-	Cube(GLfloat size, GLuint texture, glm::vec3 position);
+	Cube(GLfloat size, GLuint texture, glm::vec3 position, glm::vec4 rotation);
 };

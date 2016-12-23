@@ -44,7 +44,7 @@ int main()
 
 	loco = new Locomotive(1.0f);
 
-	double a = 0;
+	double a = 0, b = 0;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -79,12 +79,12 @@ int main()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		//a = (a + 0.001);
-		a += loco->getSpeed();
+		a = (a + 0.001);
+		b += loco->getSpeed();
 		glm::mat4 trans;
-		trans = glm::translate(trans, glm::vec3(0, 0, a ));
-		GLfloat angle = 0;// = 20.0f * i + a;
-		trans = glm::rotate(trans, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+		trans = glm::translate(trans, glm::vec3(0, 0, b ));
+		GLfloat angle = 20.0f * + a;
+		trans = glm::rotate(trans, angle, glm::vec3(1.0f, 0.5f, 0.3f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(trans));
 		loco->Draw(trans, modelLoc, ourShader.Program);
 
