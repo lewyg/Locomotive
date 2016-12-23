@@ -13,6 +13,8 @@ using namespace std;
 
 void PrimitiveObject::bindVertices()
 {
+	this->rotateVerticesAroundAxis();
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
@@ -65,6 +67,38 @@ void PrimitiveObject::pushVertex(GLfloat x, GLfloat y, GLfloat z, GLfloat tx, GL
 	coord.push_back(z);
 	coord.push_back(tx);
 	coord.push_back(ty);
+}
+
+void PrimitiveObject::rotateVerticesAroundAxis()
+{
+	glm::vec4 axis = this->getRotation();
+	if (axis.x + axis.y + axis.z == 1.0f)
+	{
+		GLfloat angle = axis.w;
+		GLfloat sinA = sin(angle);
+		GLfloat cosA = cos(angle);
+
+		GLfloat x, y, z;
+		for (int i = 0; i < coord.size(); i += 5)
+		{
+				x = this->coord[i];
+				y = this->coord[i + 1];
+				z = this->coord[i + 2];
+
+				this->coord[i] = axis.x ? x :
+					(axis.y ? cosA * x + sinA * z :
+					cosA * x - sinA * y);
+
+				this->coord[i + 1] = axis.y ? y :
+					(axis.z ? cosA * y + sinA * x:
+					cosA * y - sinA * z);
+
+				this->coord[i + 2] = axis.z ? z :
+					(axis.x ? cosA * z + sinA * y :
+					cosA * z - sinA * x);
+		}
+	}
+		this->setRotation(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 PrimitiveObject::~PrimitiveObject()
