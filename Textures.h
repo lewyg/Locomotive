@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef GLEW_STATIC
 #include <GL/glew.h>
 #endif

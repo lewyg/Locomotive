@@ -9,6 +9,8 @@
 
 using namespace std;
 
-Cube::Cube(GLfloat size, GLuint texture, glm::vec3 position, glm::vec4 rotation)
-	: Box(size, size, size, texture, position,rotation)
+Cube::Cube(GLfloat size,
+	GLuint textureDiffuse, GLuint textureSpecular,
+	glm::vec3 position, glm::vec4 rotation)
+	: Box(size, size, size, textureDiffuse, textureSpecular, position, rotation)
 {}

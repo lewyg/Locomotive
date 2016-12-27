@@ -11,15 +11,16 @@ protected:
 	glm::vec3 position;
 	glm::vec4 rotation;
 	std::vector<GLfloat> coord;
-	GLuint texture;
+	GLuint textureDiffuse;
+	GLuint textureSpecular;
 
 public:
-	PrimitiveObject(GLuint tex, glm::vec3 pos, glm::vec4 rot)
-		: texture(tex), position(pos), rotation(rot) {}
+	PrimitiveObject(GLuint texD, GLuint texS, glm::vec3 pos, glm::vec4 rot)
+		: textureDiffuse(texD), textureSpecular(texS), position(pos), rotation(rot) {}
 	~PrimitiveObject();
 	void bindVertices();
 	void Draw(const glm::mat4&, GLuint modelLoc, GLuint shader) const;
-	void pushVertex(GLfloat x, GLfloat y, GLfloat z, GLfloat tx, GLfloat ty);
+	void pushVertex(GLfloat x, GLfloat y, GLfloat z, GLfloat nx, GLfloat ny, GLfloat nz, GLfloat tx, GLfloat ty);
 	void rotateVerticesAroundAxis();
 
 	glm::vec3 getPosition()

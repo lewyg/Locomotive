@@ -117,7 +117,7 @@ public:
 		this->Position += this->Front * yoffset;
 	}
 
-private:
+//private:
 	// Calculates the front vector from the Camera's (updated) Eular Angles
 	void updateCameraVectors()
 	{
@@ -132,4 +132,3 @@ private:
 		this->Up = glm::normalize(glm::cross(this->Right, this->Front));
 	}
 };
-

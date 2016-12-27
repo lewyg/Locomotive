@@ -2,10 +2,10 @@ CXX = g++
 CXXFLAGS = --std=c++11 #-Wall -Werror # tutaj można dodawać inne flagi kompilatora
 LIBS = -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -lSOIL -ldl  # tutaj można dodawać biblioteki
 
-all: main.o Locomotive.o Camera.o Shader.o Box.o Cube.o Cylinder.o Cone.o PrimitiveObject.o
-	$(CXX) main.o Locomotive.o Camera.o Shader.o Box.o Cube.o Cylinder.o Cone.o PrimitiveObject.o $(LIBS) -o test
+all: main.o Locomotive.o Camera.o Shader.o Box.o Cube.o Cylinder.o Cone.o PrimitiveObject.o PointLight.o
+	$(CXX) main.o Locomotive.o Camera.o Shader.o Box.o Cube.o Cylinder.o Cone.o PrimitiveObject.o PointLight.o $(LIBS) -o test
 
-main.o: main.cpp Locomotive.h Shader.h Camera.h Textures.h PrimitiveObject.h
+main.o: main.cpp Locomotive.h Shader.h Camera.h Textures.h PrimitiveObject.h Box.h
 	$(CXX) main.cpp -c $(CXXFLAGS) -o main.o
 
 PrimitiveObject.o: PrimitiveObject.cpp PrimitiveObject.h
@@ -16,6 +16,9 @@ Locomotive.o: Locomotive.cpp Locomotive.h PrimitiveObject.h Box.h Cube.h Cylinde
 
 Camera.o: Camera.cpp Camera.h
 	$(CXX) Camera.cpp -c $(CXXFLAGS) -o Camera.o
+
+PointLight.o: PointLight.cpp PointLight.h
+	$(CXX) PointLight.cpp -c $(CXXFLAGS) -o PointLight.o
 
 Shader.o: Shader.cpp Shader.h
 	$(CXX) Shader.cpp -c $(CXXFLAGS) -o Shader.o
