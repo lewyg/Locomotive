@@ -10,7 +10,8 @@
 #include "Locomotive.h"
 
 #include "SOIL.h"
-//#include "Textures.h"
+#include "Textures.h"
+#include "Skybox.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,14 +27,14 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void Do_Movement();
 GLFWwindow* initGL();
-GLuint loadTexture(const char * file);
-GLuint loadCubemap(vector<const GLchar*> faces);
 
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 bool keys[1024];
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
+
+
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
@@ -42,53 +43,6 @@ bool cameraMode = false;
 GLfloat anglecamera;
 
 GLfloat x = 0;
-
-
-
-GLfloat skyboxVertices[] = {
-    // Positions
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
-};
 
 // Positions of the point lights
     glm::vec3 pointLightPositions[] = {
@@ -104,16 +58,7 @@ Box * ground;
 int main()
 {
 	GLFWwindow* window = initGL();
-
-  vector<const GLchar*> faces;
-  faces.push_back("img/skybox/right.jpg");
-  faces.push_back("img/skybox/left.jpg");
-  faces.push_back("img/skybox/top.jpg");
-  faces.push_back("img/skybox/bottom.jpg");
-  faces.push_back("img/skybox/back.jpg");
-  faces.push_back("img/skybox/front.jpg");
-  GLuint cubemapTexture = loadCubemap(faces);
-
+  Skybox skybox;
 	// Setup and compile our shaders
 	Shader ourShader("shader.vs", "shader.frag");
 	Shader lampShader("lamp.vs", "lamp.frag");
@@ -124,20 +69,10 @@ int main()
   PrimitiveObject * p4 = new Box(0.2f, 0.2f, 0.2f, 0, 0, pointLightPositions[3], glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
   ground = new Box(500.0f, 0.1f, 500.0f, loadTexture("img/skybox/bottom.jpg"), 0, glm::vec3(0.0f, -0.7f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
 
-  // Setup skybox VAO
-  GLuint skyboxVAO, skyboxVBO;
-  glGenVertexArrays(1, &skyboxVAO);
-  glGenBuffers(1, &skyboxVBO);
-  glBindVertexArray(skyboxVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-  glBindVertexArray(0);
-
 	loco = new Locomotive(1.0f);
 
 	double a = 0, b = 0;
+
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -155,19 +90,14 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Draw skybox first
-      glDepthMask(GL_FALSE);// Remember to turn depth writing off
+
       skyboxShader.Use();
+      glDepthMask(GL_FALSE);// Remember to turn depth writing off
       glm::mat4 view1 = glm::mat4(glm::mat3(camera.GetViewMatrix()));	// Remove any translation component of the view matrix
       glm::mat4 projection1 = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
       glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view1));
       glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection1));
-      // skybox cube
-      glBindVertexArray(skyboxVAO);
-      glActiveTexture(GL_TEXTURE0);
-      glUniform1i(glGetUniformLocation(skyboxShader.Program, "skybox"), 0);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-      glBindVertexArray(0);
+      skybox.Draw(skyboxShader.Program);
       glDepthMask(GL_TRUE);
 
 		ourShader.Use();
@@ -322,38 +252,6 @@ GLFWwindow* initGL()
 	glEnable(GL_DEPTH_TEST);
 	return window;
 }
-
-
-
-
-GLuint loadCubemap(vector<const GLchar*> faces)
-{
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glActiveTexture(GL_TEXTURE0);
-
-    int width,height;
-    unsigned char* image;
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-    for(GLuint i = 0; i < faces.size(); i++)
-    {
-        image = SOIL_load_image(faces[i], &width, &height, 0, SOIL_LOAD_RGB);
-        glTexImage2D(
-            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-            GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
-        );
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-    return textureID;
-}
-
 
 // Moves/alters the camera positions based on user input
 void Do_Movement()
