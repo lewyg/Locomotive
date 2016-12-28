@@ -19,7 +19,9 @@
 #include "PointLight.h"
 #include "Locomotive.h"
 #include "Skybox.h"
+#include "Terrain.h"
 #include "Scene.h"
+
 
 // Positions of the point lights
 glm::vec3 lightPositions[] = {
@@ -47,6 +49,7 @@ Scene::Scene(Camera * cam)
     1.0f, 0.09f, 0.032f
   );
   lights.push_back(pl);
+
   PointLight * pl2 = new PointLight(
     new Box(0.2f, 0.3f, 0.2f, 0, 0, lightPositions[1], glm::vec4(1.0f, 1.0f, 1.0f, 0.0f)),
     lightPositions[1],
@@ -57,11 +60,7 @@ Scene::Scene(Camera * cam)
   );
   lights.push_back(pl2);
 
-  ground = new Box(100.0f, 0.2f, 100.f,
-  loadTexture("img/skybox/bottom.png"), 0,
-  glm::vec3(0.0f, -0.2f, 0.0f),
-  glm::vec4(0.0f, 1.0f, 0.0f, 0.0f), 5.0f);
-
+  terrain = new Terrain("img/heightmap3.bmp", loadTexture("img/skybox/bottom.png"));
   locomotive = new Locomotive(1.0f);
   camera = cam;
 }
@@ -92,9 +91,10 @@ void Scene::Draw()
   // Directional light
   glUniform3f(glGetUniformLocation(objectShader->Program, "dirLight.direction"), dirLight.x, dirLight.y, dirLight.z);
   glUniform3f(glGetUniformLocation(objectShader->Program, "dirLight.ambient"), ambientLight.x, ambientLight.y, ambientLight.z);
-  glUniform3f(glGetUniformLocation(objectShader->Program, "dirLight.diffuse"), 0.4f, 0.4f, 0.4f);
+  glUniform3f(glGetUniformLocation(objectShader->Program, "dirLight.diffuse"), 0.6f, 0.6f, 0.6f);
   glUniform3f(glGetUniformLocation(objectShader->Program, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
-  // Point light 1
+
+  // Point lights
   glUniform1i(glGetUniformLocation(objectShader->Program, "nr_lights"), lights.size());
   for (int i = 0; i < lights.size(); ++i)
   {
@@ -128,8 +128,9 @@ void Scene::Draw()
   // Pass the matrices to the shader
   glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
   glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-  glm::mat4 transGround;
-  ground->Draw(transGround, modelLoc, objectShader->Program);
+
+  glm::mat4 transTerrain;
+  terrain->Draw(transTerrain, modelLoc, objectShader->Program);
 
   glm::mat4 transLocomotive;
   glm::vec4 rotationLocomotive = locomotive->getRotation();
@@ -138,7 +139,7 @@ void Scene::Draw()
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(transLocomotive));
   locomotive->Draw(transLocomotive, modelLoc, objectShader->Program);
 
-  // Also draw the lamp object, again binding the appropriate shader
+  // Lamps
   lampShader->Use();
   // Get location objects for the matrices on the lamp shader (these could be different on a different shader)
   modelLoc = glGetUniformLocation(lampShader->Program, "model");
@@ -150,7 +151,6 @@ void Scene::Draw()
   for (int i = 0; i < lights.size(); ++i)
   {
     glm::mat4 transLamp;
-    //transLamp = glm::translate(transLamp, lightPositions[i]);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(transLamp));
     lights[i]->lamp->Draw(transLamp, modelLoc, lampShader->Program);
   }
@@ -160,6 +160,7 @@ void Scene::Action()
 {
   locomotive->Action();
 
+  //Camera modes
   if(camera->cameraMode == 1)
   {
     GLfloat angleCamera = locomotive->getAngle();
@@ -181,7 +182,7 @@ void Scene::Action()
 void Scene::KeyHandler(bool keyUp, bool keyDown, GLfloat deltaTime)
 {
   if (keyUp)
-		locomotive->setSpeed(locomotive->getSpeed() + 0.05f * deltaTime);
+		locomotive->setSpeed(locomotive->getSpeed() + 0.1f * deltaTime);
 	if (keyDown)
-		locomotive->setSpeed(locomotive->getSpeed() - 0.05f * deltaTime);
+		locomotive->setSpeed(locomotive->getSpeed() - 0.1f * deltaTime);
 }

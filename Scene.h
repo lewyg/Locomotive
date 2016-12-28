@@ -12,8 +12,7 @@ class Scene
   Locomotive * locomotive;
   Skybox * skybox;
   Camera * camera;
-  Box * ground;
-
+  Terrain * terrain;
 public:
 	Scene(Camera * cam);
   void Draw();

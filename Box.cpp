@@ -8,10 +8,6 @@
 
 using namespace std;
 
-GLfloat vertices[] = {
-
-    };
-
 static vector<GLfloat> unit_box = {
   // Positions          // Normals           // Texture Coords
   -0.5f,  0.0f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,

@@ -13,6 +13,7 @@
 #include "Textures.h"
 #include "Skybox.h"
 #include "PointLight.h"
+#include "Terrain.h"
 #include "Scene.h"
 
 #include <glm/glm.hpp>
@@ -46,7 +47,6 @@ int main()
 {
 	GLFWwindow* window = initGL();
   scene = new Scene(&camera);
-
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
