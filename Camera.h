@@ -43,6 +43,7 @@ public:
 	GLfloat MovementSpeed;
 	GLfloat MouseSensitivity;
 	GLfloat Zoom;
+	GLuint cameraMode;
 
 	// Constructor with vectors
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), GLfloat yaw = YAW, GLfloat pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), Zoom(ZOOM)
@@ -67,6 +68,11 @@ public:
 	glm::mat4 GetViewMatrix()
 	{
 		return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
+	}
+
+	glm::mat4 GetProjection(float screenWidth, float screenHeight)
+	{
+		return glm::perspective(this->Zoom, (float)screenWidth / (float)screenHeight, 0.1f, 1000.0f);
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -117,7 +123,7 @@ public:
 		this->Position += this->Front * yoffset;
 	}
 
-private:
+//private:
 	// Calculates the front vector from the Camera's (updated) Eular Angles
 	void updateCameraVectors()
 	{
@@ -132,4 +138,3 @@ private:
 		this->Up = glm::normalize(glm::cross(this->Right, this->Front));
 	}
 };
-
