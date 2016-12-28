@@ -12,6 +12,8 @@
 #include "SOIL.h"
 #include "Textures.h"
 #include "Skybox.h"
+#include "PointLight.h"
+#include "Scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,48 +32,20 @@ GLFWwindow* initGL();
 
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Scene * scene;
 bool keys[1024];
+
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
-
-
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
-bool cameraMode = false;
-GLfloat anglecamera;
-
-GLfloat x = 0;
-
-// Positions of the point lights
-    glm::vec3 pointLightPositions[] = {
-        glm::vec3( 0.7f,  0.2f,  2.0f),
-        glm::vec3( 2.3f, -3.3f, -4.0f),
-        glm::vec3(-4.0f,  2.0f, -12.0f),
-        glm::vec3( 0.0f,  0.0f, -3.0f)
-    };
-
-Locomotive * loco;
-Box * ground;
 // The MAIN function, from here we start our application and run our Game loop
 int main()
 {
 	GLFWwindow* window = initGL();
-  Skybox skybox;
-	// Setup and compile our shaders
-	Shader ourShader("shader.vs", "shader.frag");
-	Shader lampShader("lamp.vs", "lamp.frag");
-  Shader skyboxShader("skybox.vs", "skybox.frag");
-  PrimitiveObject * p1 = new Box(0.2f, 0.2f, 0.2f, 0, 0, pointLightPositions[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-  PrimitiveObject * p2 = new Box(0.2f, 0.2f, 0.2f, 0, 0, pointLightPositions[1], glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-  PrimitiveObject * p3 = new Box(0.2f, 0.2f, 0.2f, 0, 0, pointLightPositions[2], glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-  PrimitiveObject * p4 = new Box(0.2f, 0.2f, 0.2f, 0, 0, pointLightPositions[3], glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-  ground = new Box(500.0f, 0.1f, 500.0f, loadTexture("img/skybox/bottom.jpg"), 0, glm::vec3(0.0f, -0.7f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 0.0f));
-
-	loco = new Locomotive(1.0f);
-
-	double a = 0, b = 0;
+  scene = new Scene(&camera);
 
 	// Game loop
 	while (!glfwWindowShouldClose(window))
@@ -89,129 +63,8 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Draw skybox first
-
-      skyboxShader.Use();
-      glDepthMask(GL_FALSE);// Remember to turn depth writing off
-      glm::mat4 view1 = glm::mat4(glm::mat3(camera.GetViewMatrix()));	// Remove any translation component of the view matrix
-      glm::mat4 projection1 = glm::perspective(camera.Zoom, (float)screenWidth/(float)screenHeight, 0.1f, 100.0f);
-      glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view1));
-      glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection1));
-      skybox.Draw(skyboxShader.Program);
-      glDepthMask(GL_TRUE);
-
-		ourShader.Use();
-
-		// Use cooresponding shader when setting uniforms/drawing objects
-    GLint viewPosLoc = glGetUniformLocation(ourShader.Program, "viewPos");
-    glUniform3f(viewPosLoc, camera.Position.x, camera.Position.y, camera.Position.z);
-    // Set material properties
-    glUniform1f(glGetUniformLocation(ourShader.Program, "material.shininess"), 32.0f);
-    // == ==========================
-    // Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
-    // the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
-    // by defining light types as classes and set their values in there, or by using a more efficient uniform approach
-    // by using 'Uniform buffer objects', but that is something we discuss in the 'Advanced GLSL' tutorial.
-    // == ==========================
-    // Directional light
-    glUniform3f(glGetUniformLocation(ourShader.Program, "dirLight.direction"), -0.2f, -1.0f, -0.3f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "dirLight.ambient"), 0.1f, 0.1f, 0.1f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "dirLight.diffuse"), 1.0f, 1.0f, 1.0f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
-    // Point light 1
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[0].position"), pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[0].ambient"), 0.05f, 0.05f, 0.05f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[0].diffuse"), 0.8f, 0.8f, 0.8f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[0].specular"), 1.0f, 1.0f, 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[0].constant"), 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[0].linear"), 0.7);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[0].quadratic"), 1.8);
-    // Point light 2
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[1].position"), pointLightPositions[1].x, pointLightPositions[1].y, pointLightPositions[1].z);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[1].ambient"), 0.05f, 0.05f, 0.05f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[1].diffuse"), 0.8f, 0.8f, 0.8f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[1].specular"), 1.0f, 1.0f, 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[1].constant"), 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[1].linear"), 0.7);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[1].quadratic"), 1.8);
-    // Point light 3
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[2].position"), pointLightPositions[2].x, pointLightPositions[2].y, pointLightPositions[2].z);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[2].ambient"), 0.05f, 0.05f, 0.05f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[2].diffuse"), 0.8f, 0.8f, 0.8f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[2].specular"), 1.0f, 1.0f, 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[2].constant"), 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[2].linear"), 0.7);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[2].quadratic"), 1.8);
-    // Point light 4
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[3].position"), pointLightPositions[3].x, pointLightPositions[3].y, pointLightPositions[3].z);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[3].ambient"), 0.05f, 0.05f, 0.05f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[3].diffuse"), 0.8f, 0.8f, 0.8f);
-    glUniform3f(glGetUniformLocation(ourShader.Program, "pointLights[3].specular"), 1.0f, 1.0f, 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[3].constant"), 1.0f);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[3].linear"), 0.7);
-    glUniform1f(glGetUniformLocation(ourShader.Program, "pointLights[3].quadratic"), 1.8);
-    // SpotLight
-    /*glUniform3f(glGetUniformLocation(lightingShader.Program, "spotLight.position"), camera.Position.x, camera.Position.y, camera.Position.z);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "spotLight.direction"), camera.Front.x, camera.Front.y, camera.Front.z);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "spotLight.ambient"), 0.0f, 0.0f, 0.0f);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "spotLight.diffuse"), 1.0f, 1.0f, 1.0f);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "spotLight.specular"), 1.0f, 1.0f, 1.0f);
-    glUniform1f(glGetUniformLocation(lightingShader.Program, "spotLight.constant"), 1.0f);
-    glUniform1f(glGetUniformLocation(lightingShader.Program, "spotLight.linear"), 0.09);
-    glUniform1f(glGetUniformLocation(lightingShader.Program, "spotLight.quadratic"), 0.032);
-    glUniform1f(glGetUniformLocation(lightingShader.Program, "spotLight.cutOff"), glm::cos(glm::radians(12.5f)));
-    glUniform1f(glGetUniformLocation(lightingShader.Program, "spotLight.outerCutOff"), glm::cos(glm::radians(15.0f)));*/
-
-    if (cameraMode)
-    {
-      anglecamera = loco->angl - M_PI / 4;
-      camera.Position = glm::vec3(loco->getPosition() + glm::vec3(cos(anglecamera) * 4.0f, 3.0f, sin(anglecamera) * 4.0f));
-      camera.Yaw += loco->getSpeed() / 20.0f * 0.3f * 180 / M_PI;
-      camera.updateCameraVectors();
-    }
-		// Create camera transformation
-		glm::mat4 view;
-		view = camera.GetViewMatrix();
-		glm::mat4 projection;
-		projection = glm::perspective(camera.Zoom, (float)screenWidth / (float)screenHeight, 0.1f, 1000.0f);
-
-		// Get the uniform locations
-		GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
-		GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
-		GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
-
-		// Pass the matrices to the shader
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    //glUniform1f(glGetUniformLocation(ourShader.Program, "lightOff"), true);
-    glm::mat4 trans2;
-    ground->Draw(trans2, modelLoc, ourShader.Program);
-    //glUniform1f(glGetUniformLocation(ourShader.Program, "lightOff"), false);
-
-		loco->Action();
-		a = (a + 0.001);
-		b += loco->getSpeed() / 20.0f * 0.3f;
-		glm::mat4 trans;
-		trans = glm::translate(trans, loco->getPosition());
-		GLfloat angle = -b;
-		trans = glm::rotate(trans, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(trans));
-		loco->Draw(trans, modelLoc, ourShader.Program);
-
-    // Also draw the lamp object, again binding the appropriate shader
-    lampShader.Use();
-    // Get location objects for the matrices on the lamp shader (these could be different on a different shader)
-    modelLoc = glGetUniformLocation(lampShader.Program, "model");
-    viewLoc  = glGetUniformLocation(lampShader.Program, "view");
-    projLoc  = glGetUniformLocation(lampShader.Program, "projection");
-    // Set matrices
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		p1->Draw(trans, modelLoc, lampShader.Program);
-    p2->Draw(trans, modelLoc, lampShader.Program);
-    p3->Draw(trans, modelLoc, lampShader.Program);
-    p4->Draw(trans, modelLoc, lampShader.Program);
-
+		scene->Action();
+    scene->Draw();
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}
@@ -265,10 +118,8 @@ void Do_Movement()
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (keys[GLFW_KEY_D])
 		camera.ProcessKeyboard(RIGHT, deltaTime);
-	if (keys[GLFW_KEY_UP])
-		loco->setSpeed(loco->getSpeed() + 0.05f * deltaTime);
-	if (keys[GLFW_KEY_DOWN])
-		loco->setSpeed(loco->getSpeed() - 0.05f * deltaTime);
+	if (scene != NULL)
+		scene->KeyHandler(keys[GLFW_KEY_UP], keys[GLFW_KEY_DOWN], deltaTime);
 }
 
 // Is called whenever a key is pressed/released via GLFW
@@ -284,8 +135,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		else if (action == GLFW_RELEASE)
 			keys[key] = false;
 	}
-  if (key == GLFW_KEY_C && (action == GLFW_RELEASE))
-    cameraMode = !cameraMode;
+ 	if (key == GLFW_KEY_C && (action == GLFW_RELEASE))
+    ++(camera.cameraMode) %= 3;
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -305,7 +156,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
-
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {

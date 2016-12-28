@@ -1,3 +1,5 @@
+
+
 #version 330 core
 struct Material {
     sampler2D diffuse;
@@ -37,7 +39,7 @@ uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform Material material;
-uniform bool lightOff;
+uniform int nr_lights;
 
 // Function prototypes
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -58,14 +60,12 @@ void main()
     // Phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
     // Phase 2: Point lights
-    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+    for(int i = 0; i < nr_lights; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
     // Phase 3: Spot light
     // result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
 
     color = vec4(result, 1.0);
-    if (lightOff == true)
-      color = texture(material.diffuse, TexCoords);
 }
 
 // Calculates the color when using a directional light.
@@ -81,7 +81,6 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
-
     return (ambient + diffuse + specular);
 }
 

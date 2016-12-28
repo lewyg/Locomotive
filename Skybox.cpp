@@ -58,12 +58,12 @@ GLfloat skyboxVertices[] = {
 Skybox::Skybox()
 {
   std::vector<const GLchar*> faces;
-  faces.push_back("img/skybox/right.jpg");
-  faces.push_back("img/skybox/left.jpg");
-  faces.push_back("img/skybox/top.jpg");
-  faces.push_back("img/skybox/bottom.jpg");
-  faces.push_back("img/skybox/back.jpg");
-  faces.push_back("img/skybox/front.jpg");
+  faces.push_back("img/skybox/right.png");
+  faces.push_back("img/skybox/left.png");
+  faces.push_back("img/skybox/top.png");
+  faces.push_back("img/skybox/bottom.png");
+  faces.push_back("img/skybox/back.png");
+  faces.push_back("img/skybox/front.png");
   cubemapTexture = loadCubemap(faces);
 
   // Setup skybox VAO

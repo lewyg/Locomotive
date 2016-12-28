@@ -59,7 +59,7 @@ static vector<GLfloat> unit_box = {
 
 Box::Box(GLfloat size_x, GLfloat size_y, GLfloat size_z,
   GLuint textureDiffuse, GLuint textureSpecular,
-  glm::vec3 position, glm::vec4 rotation)
+  glm::vec3 position, glm::vec4 rotation, GLfloat tex_size)
   : PrimitiveObject(textureDiffuse, textureSpecular, position, rotation)
 {
 	for (int i = 0; i < unit_box.size() / 8; ++i)
@@ -71,8 +71,8 @@ Box::Box(GLfloat size_x, GLfloat size_y, GLfloat size_z,
       unit_box[i * 8 + 3],
       unit_box[i * 8 + 4],
       unit_box[i * 8 + 5],
-      unit_box[i * 8 + 6],
-      unit_box[i * 8 + 7]);
+      unit_box[i * 8 + 6] * tex_size,
+      unit_box[i * 8 + 7] * tex_size);
 	}
 
 	bindVertices();
