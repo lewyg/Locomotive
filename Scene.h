@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAP_WIDTH 100
+#define MAP_HEIGHT 100
 class Scene
 {
   Shader * skyboxShader;
@@ -7,16 +9,19 @@ class Scene
   Shader * lampShader;
 
   std::vector<PointLight *> lights;
-  std::vector<PrimitiveObject *> objects;
+  std::vector<Lantern *> lanterns;
+  std::vector<Tree *> trees;
 
   Locomotive * locomotive;
   Skybox * skybox;
   Camera * camera;
-  Box * ground;
-
+  Terrain * terrain;
+  Rail * rail;
 public:
+  bool night;
 	Scene(Camera * cam);
   void Draw();
   void Action();
   void KeyHandler(bool keyUp, bool keyDown, GLfloat deltaTime);
+  void checkCameraPosition();
 };

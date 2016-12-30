@@ -1,5 +1,6 @@
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
+#define MAP_SIZE 50
 #include <GL/glew.h>
 #include <vector>
 #include <glm/glm.hpp>
@@ -12,47 +13,47 @@
 
 GLfloat skyboxVertices[] = {
     // Positions
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
+    -MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
+    -MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
+    -MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
 
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
+    -MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
+    -MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+    -MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
+    -MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
+    -MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+    -MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
 
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
+     MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
 
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
+    -MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
+    -MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
+    -MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
 
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
+    -MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+    -MAP_SIZE,  MAP_SIZE,  MAP_SIZE,
+    -MAP_SIZE,  MAP_SIZE, -MAP_SIZE,
 
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
+    -MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+    -MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE, -MAP_SIZE,
+    -MAP_SIZE, -MAP_SIZE,  MAP_SIZE,
+     MAP_SIZE, -MAP_SIZE,  MAP_SIZE
 };
 
 Skybox::Skybox()
