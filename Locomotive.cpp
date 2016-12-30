@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #endif
 #include "PrimitiveObject.h"
+#include "Track.h"
 #include "Locomotive.h"
 #include "Box.h"
 #include "Cube.h"
@@ -14,7 +15,7 @@
 using namespace std;
 
 static vector<glm::vec3> parts_position = {
-	glm::vec3(0.0f, 0.3f + WHEEL_SIZE, 0.0f - Z_OFFSET),	//cabine
+	glm::vec3(0.0f, 0.6f + WHEEL_SIZE, 0.0f - Z_OFFSET),	//cabine
 	glm::vec3(0.0f, 0.6f + WHEEL_SIZE, 0.5f - Z_OFFSET),	//cylinder
 	glm::vec3(0.0f, 0.6f + WHEEL_SIZE, 2.0f - Z_OFFSET),	//cone
 	glm::vec3(0.0f, 0.0f + WHEEL_SIZE, 0.75f - Z_OFFSET),	//base
@@ -50,8 +51,8 @@ Locomotive::Locomotive(GLfloat size)
 	this->size = size;
 	this->setRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 	GLuint tex1 = loadTexture("img/steel.png");
-	GLuint tex2 = loadTexture("img/container.jpg");
-	this->parts.push_back(new Box(1.0f * size, 1.5f * size, 1.0 * size, tex1, 0, scalePosition(parts_position[0], size), start_rotation[0]));
+	GLuint tex2 = loadTexture("img/wood.png");
+	this->parts.push_back(new Box(1.0f * size, 1.2f * size, 1.0 * size, tex1, 0, scalePosition(parts_position[0], size), start_rotation[0]));
 	this->parts.push_back(new Cylinder(1.5f * size, 0.5f * size, 20, tex1, 0, scalePosition(parts_position[1], size), start_rotation[2]));
 	this->parts.push_back(new Cone(0.5f * size, 0.5f * size, 20, tex1, 0, scalePosition(parts_position[2], size), start_rotation[2]));
 	this->parts.push_back(new Box(1.0f * size, 0.6f * size, 2.5f * size, tex1, 0, scalePosition(parts_position[3], size), start_rotation[0]));
@@ -86,13 +87,15 @@ Locomotive::Locomotive(GLfloat size)
 void Locomotive::Action()
 {
 	glm::vec4 * rot = &(this->rotation);
-	rot->w += getSpeed() / TRACK_RADIUS * (WHEEL_SIZE * size);
+	rot->w += getSpeed() / TRACK_SIZE * (WHEEL_SIZE * size);
 	GLfloat newx;
 	GLfloat newz;
 	glm::vec3 pos = getPosition();
-	newx = TRACK_RADIUS * cos(rot->w);
-	newz = TRACK_RADIUS * sin(rot->w);
+	newx = TRACK_SIZE * cos(rot->w);
+	newz = TRACK_SIZE * sin(rot->w);
 	setPosition(glm::vec3(newx, pos.y, newz));
+
+	//setPosition(track->nextPosition(getPosition(), getSpeed()));
 
 	glm::vec4 rotWheel;
 	for (int i = 0; i < wheels.size(); ++i)
@@ -120,10 +123,6 @@ void Locomotive::Action()
 
 void Locomotive::Draw(const glm::mat4& modelTrans, GLuint modelLoc, GLuint shader) const
 {
-	/*for each (PrimitiveObject* obj in parts)
-	{
-		obj->Draw(modelTrans, modelLoc, shader);
-	}*/
 	for (int i = 0; i < parts.size(); ++i)
 		this->parts[i]->Draw(modelTrans, modelLoc, shader);
 }

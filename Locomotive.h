@@ -1,8 +1,8 @@
 #pragma once
 #include<iostream>
 
+#define TRACK_SIZE 32.0
 #define WHEEL_SIZE 0.3
-#define TRACK_RADIUS 20.0
 #define Z_OFFSET 0.7
 class Locomotive
 {
@@ -39,7 +39,7 @@ public:
 	}
 	GLfloat getAngleCamera()
 	{
-		return getSpeed() / TRACK_RADIUS * (WHEEL_SIZE * size) * 180.0 / M_PI;
+		return getSpeed() / TRACK_SIZE * (WHEEL_SIZE * size) * 180.0 / M_PI;
 	}
 
 	void setSpeed(GLfloat speed)

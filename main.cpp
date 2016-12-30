@@ -1,12 +1,17 @@
 #include <string>
 #include <vector>
 #define GLEW_STATIC
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Shader.h"
 #include "Camera.h"
 #include "PrimitiveObject.h"
 #include "Box.h"
+#include "Track.h"
+#include "Rail.h"
+#include "PointLight.h"
+#include "Lantern.h"
 #include "Locomotive.h"
 
 #include "SOIL.h"
@@ -14,6 +19,7 @@
 #include "Skybox.h"
 #include "PointLight.h"
 #include "Terrain.h"
+#include "Tree.h"
 #include "Scene.h"
 
 #include <glm/glm.hpp>
@@ -137,6 +143,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
  	if (key == GLFW_KEY_C && (action == GLFW_RELEASE))
     ++(camera.cameraMode) %= 3;
+	if (key == GLFW_KEY_N && (action == GLFW_RELEASE))
+    scene->night = !(scene->night);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)

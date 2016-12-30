@@ -45,6 +45,15 @@ Terrain::Terrain(const char * file, GLuint tex)
   computedNormals = false;
   this->computeNormals();
 
+  if (this->length() > 0)
+  {
+    for(int x = 0; x < this->width() - 1; x++)
+    {
+      pushTerrainVertex(x, 0);
+      pushTerrainVertex(x + 1, 1);
+      pushTerrainVertex(x + 1, 0);
+		}
+  }
   for(int z = 1; z < this->length() - 1; z++) {
 		for(int x = 0; x < this->width() - 1; x++) {
       pushTerrainVertex(x, z);
@@ -56,6 +65,15 @@ Terrain::Terrain(const char * file, GLuint tex)
       pushTerrainVertex(x + 1, z);
 		}
 	}
+  if (this->length() > 0)
+  {
+    for(int x = 0; x < this->width() - 1; x++)
+    {
+      pushTerrainVertex(x, this->length() - 1);
+      pushTerrainVertex(x, this->length() - 2);
+      pushTerrainVertex(x + 1, this->length() - 1);
+		}
+  }
 
   bindVertices();
 }
@@ -102,7 +120,7 @@ glm::vec3 normalize(glm::vec3 Vec)
 
 void Terrain::pushTerrainVertex(GLuint x, GLuint z)
 {
-  float factor = 4.0f;
+  float factor = 1.0f;
   glm::vec3 normal = this->getNormal(x, z);
   pushVertex(
     x, this->getHeight(x, z), z,

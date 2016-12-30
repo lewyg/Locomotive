@@ -25,9 +25,10 @@ Cone::Cone(GLfloat height, GLfloat radius, GLuint sides,
 		pushVertex(x, y, 0, 0.0f, 0.0f, -1.0f, i % 2 ? 1 : 0, 0);
 		pushVertex(0, 0, 0, 0.0f, 0.0f, -1.0f, 0.5, 1);
 
-		pushVertex(0, 0, height, x, y, height, 0.5, 0);
-		pushVertex(x, y, 0, x, y, height, 0, 1);
-		pushVertex(prev_x, prev_y, 0, x, y, height, 1, 1);
+    float zn = radius * radius / height;
+		pushVertex(0, 0, height, x, y, zn, 0.5, 0);
+		pushVertex(x, y, 0, x, y, zn, 0, 1);
+		pushVertex(prev_x, prev_y, 0, x, y, zn, 1, 1);
 
 		prev_x = x;
 		prev_y = y;
